@@ -1,10 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Rutas de autenticación
+app.use('/api/auth', authRoutes);
 
 // Ruta de búsqueda
 app.get('/api/anime/search', async (req, res) => {

@@ -1,9 +1,22 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+const categories = [
+  { name: 'Acción', subs: ['Artes Marciales', 'Superpoderes', 'Militar'] },
+  { name: 'Aventura', subs: ['Fantasía', 'Mundos Paralelos', 'Viajes'] },
+  { name: 'Comedia', subs: ['Parodia', 'Sitcom', 'Slapstick'] },
+  { name: 'Drama', subs: ['Psicológico', 'Romance', 'Tragedia'] },
+  { name: 'Fantasía', subs: ['Magia', 'Criaturas', 'Misterio'] },
+  { name: 'Misterio', subs: ['Detectives', 'Suspense', 'Sobrenatural'] },
+  { name: 'Romance', subs: ['Comedia Romántica', 'Drama Romántico', 'Escolar'] },
+  { name: 'Ciencia Ficción', subs: ['Mecha', 'Espacio', 'Cyberpunk'] },
+  { name: 'Slice of Life', subs: ['Escolar', 'Deportes', 'Recuentos de la vida'] },
+  { name: 'Terror', subs: ['Sobrenatural', 'Gore', 'Suspense'] }
+];
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [openCategory, setOpenCategory] = useState(null);
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
@@ -13,8 +26,8 @@ const Header = () => {
     }
   };
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
+  const toggleCategory = (name) => {
+    setOpenCategory(openCategory === name ? null : name);
   };
 
   const headerStyle = {
@@ -24,6 +37,9 @@ const Header = () => {
     alignItems: 'center',
     justifyContent: 'space-between',
     boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 1000
   };
 
   const logoStyle = {
@@ -31,7 +47,7 @@ const Header = () => {
     fontSize: '1.5rem',
     fontWeight: 'bold',
     textDecoration: 'none',
-    letterSpacing: '2px',
+    letterSpacing: '2px'
   };
 
   const inputStyle = {
@@ -43,7 +59,7 @@ const Header = () => {
     outline: 'none',
     fontSize: '1rem',
     width: '250px',
-    transition: 'all 0.3s ease',
+    transition: 'all 0.3s ease'
   };
 
   const buttonStyle = {
@@ -54,35 +70,71 @@ const Header = () => {
     cursor: 'pointer',
     color: '#fff',
     fontSize: '1rem',
-    transition: 'all 0.3s ease',
+    transition: 'all 0.3s ease'
   };
 
-  const dropdownStyle = {
+  const categoryMenuStyle = {
     position: 'absolute',
     top: '100%',
-    right: '20px',
+    left: '0',
     background: '#2d2d2d',
     borderRadius: '8px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
     padding: '10px 0',
-    minWidth: '180px',
-    opacity: dropdownOpen ? 1 : 0,
-    visibility: dropdownOpen ? 'visible' : 'hidden',
-    transform: dropdownOpen ? 'translateY(0)' : 'translateY(-10px)',
-    transition: 'all 0.3s ease',
+    minWidth: '200px',
+    display: openCategory ? 'block' : 'none',
+    zIndex: 1001
   };
 
-  const linkStyle = {
-    display: 'block',
-    padding: '10px 20px',
+  const subMenuStyle = {
+    padding: '8px 20px',
     color: '#fff',
+    display: 'block',
     textDecoration: 'none',
-    transition: 'background 0.2s',
+    cursor: 'pointer',
+    transition: 'background 0.2s'
+  };
+
+  const categoryLinkStyle = {
+    padding: '8px 20px',
+    color: '#fff',
+    display: 'block',
+    textDecoration: 'none',
+    cursor: 'pointer'
   };
 
   return (
     <header style={headerStyle}>
-      <a href="/" style={logoStyle}>AniVerse</a>
+      <Link to="/" style={logoStyle}>AniVerse</Link>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        {categories.map(cat => (
+          <div key={cat.name} style={{ position: 'relative' }}>
+            <span
+              style={categoryLinkStyle}
+              onClick={() => toggleCategory(cat.name)}
+            >
+              {cat.name} ▾
+            </span>
+            {openCategory === cat.name && (
+              <div style={categoryMenuStyle}>
+                {cat.subs.map(sub => (
+                  <Link
+                    key={sub}
+                    to={`/category/${cat.name}/${sub}`}
+                    style={subMenuStyle}
+                    onClick={() => setOpenCategory(null)}
+                    onMouseEnter={(e) => e.target.style.background = '#764ba2'}
+                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                  >
+                    {sub}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
       <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <input
@@ -94,26 +146,6 @@ const Header = () => {
         />
         <button type="submit" style={buttonStyle}>🔍</button>
       </form>
-
-      <div style={{ position: 'relative' }}>
-        <button onClick={toggleDropdown} style={{ ...buttonStyle, fontSize: '1.2rem' }}>
-          ☰
-        </button>
-        <div style={dropdownStyle}>
-          <a href="/season" style={linkStyle} onMouseEnter={(e) => e.target.style.background = '#764ba2'} onMouseLeave={(e) => e.target.style.background = 'transparent'}>
-            Temporada
-          </a>
-          <a href="/popular" style={linkStyle} onMouseEnter={(e) => e.target.style.background = '#764ba2'} onMouseLeave={(e) => e.target.style.background = 'transparent'}>
-            Popular
-          </a>
-          <a href="/manga" style={linkStyle} onMouseEnter={(e) => e.target.style.background = '#764ba2'} onMouseLeave={(e) => e.target.style.background = 'transparent'}>
-            Manga
-          </a>
-          <a href="/watchlist" style={linkStyle} onMouseEnter={(e) => e.target.style.background = '#764ba2'} onMouseLeave={(e) => e.target.style.background = 'transparent'}>
-            Mi Lista
-          </a>
-        </div>
-      </div>
     </header>
   );
 };
